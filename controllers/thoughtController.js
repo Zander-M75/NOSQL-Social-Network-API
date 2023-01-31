@@ -30,105 +30,120 @@ module.exports = {
       .catch((err) => {
         console.log(err);
         return res.status(500).json(err);
+      });
+
+  },
+
+  getSingleThought(req, res) {
+    Thought.findOne({ _id: req.params.thoughtId })
+      .select('-__v')
+      .then(async (thought) => {
+        if (!thought) {
+          return res.status(404).json({ message: 'No thought with that ID' });
+        }
+        const thoughtObject = {
+          thought,
+          reactionCount: await reactionCount(req.params.thoughtId),
+        };
+        return res.json(thoughtObject);
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json(err);
+      });
+  },
+
+  createThought(req, res) {
+    Thought.create(req.body)
+      .then(async (thought) => {
+        try {
+          const user = await User.findOneAndUpdate(
+            { _id: req.body.userId },
+            { $push: { thoughts: thought._id } },
+            { new: true }
+          );
+          if (!user) {
+            return res.status(404).json({ message: 'No user with that ID' });
+          }
+          return res.json(thought);
+        } catch (err) {
+          console.log(err);
+          return res.status(500).json(err);
+        }
+      });
+  },
+
+  updateThought(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      req.body,
+      { new: true }
+    )
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thought with that ID' })
+          : res.json(thought)
+      )
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json(err);
+      });
+  },
+
+  deleteThought(req, res) {
+    Thought.findOneAndDelete({ _id: req.params.thoughtId })
+      .then((thought) => {
+        if (!thought) {
+          return res.status(404).json({ message: "Thought not found" });
+        }
+        res.json({ message: "Thought successfully deleted" });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  },
+
+  createReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $push: { reactions: req.body } },
+      { new: true }
+    )
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thought found' })
+          : res.json(thought.reactions[thought.reactions.length - 1])
+      )
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json(err);
+      });
+  },
+
+  deleteReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
+      { new: true }
+    )
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thought found' })
+          : res.json({ message: 'Reaction successfully deleted' })
+      )
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json(err);
+      });
+  },
+
+};
 
 
 
 
 
 
-//   getUsers(req, res) {
-//     User.find()
-//       .then(async (students) => {
-//         const studentObj = {
-//           students,
-//           headCount: await headCount(),
-//         };
-//         return res.json(studentObj);
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//         return res.status(500).json(err);
-//       });
-//   },
 
-//   getSingleStudent(req, res) {
-//     Student.findOne({ _id: req.params.studentId })
-//       .select('-__v')
-//       .then(async (student) =>
-//         !student
-//           ? res.status(404).json({ message: 'No student with that ID' })
-//           : res.json({
-//             student,
-//             grade: await grade(req.params.studentId),
-//           })
-//       )
-//       .catch((err) => {
-//         console.log(err);
-//         return res.status(500).json(err);
-//       });
-//   },
 
-//   createStudent(req, res) {
-//     Student.create(req.body)
-//       .then((student) => res.json(student))
-//       .catch((err) => res.status(500).json(err));
-//   },
-
-//   deleteStudent(req, res) {
-//     Student.findOneAndRemove({ _id: req.params.studentId })
-//       .then((student) =>
-//         !student
-//           ? res.status(404).json({ message: 'No such student exists' })
-//           : Course.findOneAndUpdate(
-//             { students: req.params.studentId },
-//             { $pull: { students: req.params.studentId } },
-//             { new: true }
-//           )
-//       )
-//       .then((course) =>
-//         !course
-//           ? res.status(404).json({
-//             message: 'Student deleted, but no courses found',
-//           })
-//           : res.json({ message: 'Student successfully deleted' })
-//       )
-//       .catch((err) => {
-//         console.log(err);
-//         res.status(500).json(err);
-//       });
-//   },
-
-//   addAssignment(req, res) {
-//     console.log('You are adding an assignment');
-//     console.log(req.body);
-//     Student.findOneAndUpdate(
-//       { _id: req.params.studentId },
-//       { $addToSet: { assignments: req.body } },
-//       { runValidators: true, new: true }
-//     )
-//       .then((student) =>
-//         !student
-//           ? res
-//             .status(404)
-//             .json({ message: 'No student found with that ID :(' })
-//           : res.json(student)
-//       )
-//       .catch((err) => res.status(500).json(err));
-//   },
-
-//   removeAssignment(req, res) {
-//     Student.findOneAndUpdate(
-//       { _id: req.params.studentId },
-//       { $pull: { assignments: { assignmentId: { $in: [req.params.assignmentId] } } } },
-//       { runValidators: true, new: true }
-//     )
-//       .then((student) =>
-//         !student
-//           ? res
-//             .status(404)
-//             .json({ message: 'No student found with that ID :(' })
-//           : res.json(student)
-//       )
-//       .catch((err) => res.status(500).json(err));
-//   },
-// };
