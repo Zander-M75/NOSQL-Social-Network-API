@@ -1,16 +1,17 @@
-const { Course, Student } = require('../models');
+const { User, Thoughts } = require('../models');
+const { ObjectId } = require('mongoose').Types;
 
 module.exports = {
-  // Get all courses
-  getCourses(req, res) {
-    Course.find({})
-      .then((courses) => {
-        console.log(courses);
-        res.json(courses)
+
+  getUsers(req, res) {
+    User.find({})
+      .then((users) => {
+        console.log(users);
+        res.json(users)
       })
       .catch((err) => res.status(500).json(err));
   },
-  // Get a course
+
   getSingleCourse(req, res) {
     Course.findOne({ _id: req.params.courseId })
       .select('-__v')
@@ -21,7 +22,7 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
-  // Create a course
+
   createCourse(req, res) {
     Course.create(req.body)
       .then((course) => res.json(course))
@@ -30,7 +31,7 @@ module.exports = {
         return res.status(500).json(err);
       });
   },
-  // Delete a course
+
   deleteCourse(req, res) {
     Course.findOneAndDelete({ _id: req.params.courseId })
       .then((course) =>
@@ -41,7 +42,7 @@ module.exports = {
       .then(() => res.json({ message: 'Course and students deleted!' }))
       .catch((err) => res.status(500).json(err));
   },
-  // Update a course
+
   updateCourse(req, res) {
     Course.findOneAndUpdate(
       { _id: req.params.courseId },
