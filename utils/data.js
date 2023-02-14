@@ -51,11 +51,12 @@ const emails = [
 const getRandomArrItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 // Gets a random full name
-const getRandomName = (arr) =>
+const getRandomName = () =>
   `${getRandomArrItem(names)}`;
 
 // Get random email
-const getRandomEmail = (arr) => `${getRandomArrItem(emails)}`;
+const getRandomEmail = () => `${getRandomArrItem(emails)}`;
 
 // Export the functions for use in seed.js
 module.exports = { getRandomName, getRandomEmail };
+

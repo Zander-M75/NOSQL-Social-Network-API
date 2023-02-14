@@ -41,4 +41,3 @@ connection.once('open', async () => {
   console.info('Successful Seeding!');
   process.exit(0);
 });
-
