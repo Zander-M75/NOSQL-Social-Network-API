@@ -1,3 +1,5 @@
+
+
 const names = [
   "Wilson Goode",
   "Kerrigan Clinton",
@@ -44,6 +46,39 @@ const emails = [
   "amy.atwood@example.com",
   "yulisa.alvarez@example.com"
 ];
+
+const thoughts = [
+  {
+    "thoughtText": "Today is a great day!",
+    "createdAt": "2023-02-16T12:20:45.000Z",
+    "name": "Alice",
+    "reactions": [
+      {
+        "reactionBody": "😀",
+        "username": "John"
+      },
+      {
+        "reactionBody": "😊",
+        "username": "Bob"
+      }
+    ]
+  },
+  {
+    "thoughtText": "I just finished reading a great book",
+    "createdAt": "2023-02-16T15:40:00.000Z",
+    "name": "Bob",
+    "reactions": [
+      {
+        "reactionBody": "📚",
+        "username": "John"
+      },
+      {
+        "reactionBody": "😍",
+        "username": "Alice"
+      }
+    ]
+  }
+]
 
 
 
